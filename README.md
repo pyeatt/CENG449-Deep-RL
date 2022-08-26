@@ -1,1 +1,1 @@
-# CENG449-Deep-RL
+# CSC 449 - Deep RL

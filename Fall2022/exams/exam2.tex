@@ -1,0 +1,319 @@
+\documentclass[12pt]{exam}
+
+\usepackage{tikz}
+\newcommand{\tikzmark}[1]{\tikz[overlay,remember picture,node distance=0pt]\node(#1){};}
+\tikzstyle{line} = [draw, very thick, color=black!80, -latex']
+
+
+\newif\ifanswers
+\answersfalse
+%\answerstrue
+
+\usepackage{amsmath}
+\usepackage{amssymb}
+
+\newsavebox{\tmpbox}
+\usepackage{times}
+\usepackage{mathptmx}
+\usepackage{multicol}
+\usepackage{graphics}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{hyperref}
+%\usepackage{arm}
+%\usepackage{lstautogobble}
+%\lstloadlanguages{C}
+%\usepackage{eforms} % <-- the driver is pdftex or xetex
+
+\topmargin 0in
+\headheight 0in
+\headsep 0in
+\textwidth 6.5in
+\textheight 9in
+\evensidemargin 0in
+\oddsidemargin 0in
+
+\usepackage{color}
+\usepackage{xcolor}
+\newcommand{\lstcolor}{
+\lstset{
+  commentstyle=\color{green},
+  keywordstyle=[1]\color{blue},
+  keywordstyle=[2]\color{cyan},
+  keywordstyle=[3]\color{orange},
+  numberstyle=\tiny\color{gray},
+  stringstyle=\color{purple}
+}}
+
+\newcommand{\lstnocolor}{
+\lstset{
+  commentstyle=\color{black},
+  keywordstyle=[1]\color{black},
+  keywordstyle=[2]\color{black},
+  keywordstyle=[3]\color{black},
+  numberstyle=\tiny\color{black},
+  stringstyle=\color{black}
+}}
+
+\newlength{\mybasewidth}
+\settowidth{\mybasewidth}{\ttfamily\small m}
+\newlength{\mynormalbasewidth}
+\settowidth{\mynormalbasewidth}{\ttfamily m}
+\newlength{\footnotebasewidth}
+\settowidth{\footnotebasewidth}{\ttfamily\footnotesize m}
+
+\lstset{language=C,
+  backgroundcolor=\color{white},  % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}  
+  basicstyle=\ttfamily\small,
+  columns=fixed,
+  mathescape=true,
+  basewidth=\mybasewidth,
+  breakatwhitespace=true,        % sets if automatic breaks should only happen at whitespace
+  breaklines=false,               % sets automatic line breaking
+%  captionpos=b,                   % sets the caption-position to bottom
+  commentstyle=\color{green},   % comment style
+%  escapeinside={\{*}{*\}},         % if you want to add LaTeX within your code
+  extendedchars=false,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  escapechar=`,
+  frame=single,                   % adds a frame around the code
+  keywordstyle=[1]\color{blue},      % keyword style
+  keywordstyle=[2]\color{cyan},      % keyword style
+  keywordstyle=[3]\color{orange},
+  numbers=left,                   % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                  % how far the line-numbers are from the code
+  numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
+  rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,               % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,         % underline spaces within strings only
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  stepnumber=1,                   % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{purple},     % string literal style
+  tabsize=8                     % sets default tabsize to 2 spaces
+%  title=\lstname                  % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+\usepackage{pdfbase}
+\makeatletter
+\ExplSyntaxOn
+  \newcommand{\textField}[2]{
+    % register current font in /AcroForm <<...>> PDF dictionary
+    \pbs_add_form_font:
+    % get current text colour
+    \extractcolorspec{.}\@tempb
+    \expandafter\convertcolorspec\@tempb{rgb}\@tempb
+    \edef\@tempa{\expandafter\@rgbcomp\@tempb\@nil}
+    % insert Text Field
+    \raisebox{0.4\depth}{\makebox[#2][l]{
+      \pbs_pdfannot:nnnn{#2}{\ht\strutbox}{\dp\strutbox}{
+        /Subtype/Widget/FT/Tx/T (#1)
+        % set font, size, current colour
+        /DA (\pbs_last_form_font:\space\f@size\space Tf~\@tempa\space rg)
+        /MK<</BC [0~0~0]/BG [0.9~0.9~0.9]>>
+      }\strut
+    }}
+    % register Text Field in /AcroForm
+    \pbs_appendtofields:n{\pbs_pdflastann:}
+  }
+\ExplSyntaxOff
+\def\@rgbcomp#1,#2,#3\@nil{#1 #2 #3} %helper
+\makeatother  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% set of characters of the current font to be embedded
+\usepackage{luatex85}
+\newcommand{\embedChars}[1]{\pdfincludechars\font{#1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\title{CSC 449 Advanced Topics in Artificial Intelligence}
+\date{Deep Reinforcement Learning\\Exam 1\\Fall, \the\year}
+
+\usepackage{algorithm}
+%\usepackage{arevmath}     % For math symbols
+%\usepackage[noend]{algpseudocode}
+\usepackage{algpseudocode}
+
+
+\begin{document}
+\maketitle
+
+Your solutions to these problems should be uploaded to D2L as a single
+pdf file by the deadline. As with problem sets, you may turn in the
+solution up to two days late, with a penalty of 10\% per day, and you
+should only upload one version of your solutions.
+
+This exam is individual and open book. You may consult any reference
+work. If you make specific use of a reference outside those on the
+course web page in solving a problem, include a citation to that
+reference.
+
+%% So, for example, if you consult a general reference to understand the
+%% meaning of VC-dimension, you don’t need to cite that.  But if you find
+%% a reference that contains a specific result that you draw on in
+%% solving the problem on VC-dimension, please cite that.
+
+You may discuss the course material in general with other students,
+but you should work on the solutions to the problems on your own.
+
+%% So, again, you can discuss the definition of VC-dimension with other
+%% students. You can even go over the VC-dimension of a different problem
+%% with other students. But you should not work on the specific problem
+%% in this midterm with other students.
+
+It is difficult to write questions in
+which every possibility is taken into account. As a result, there may sometimes
+be ``trick'' answers that are simple and avoid addressing the
+intended problem. Such trick answers will not receive credit. As an
+example, suppose we said, use the chain rule to compute $\frac{\partial z}{\partial x}$ with $z =
+\frac{7}{y}$ and $y = x^2$. A trick answer would be to say that the partial
+deriviative is not well defined because $y$ might equal $0$. A correct
+answer might note this, but would then give the correct partial
+derivative when $y \ne 0$.
+
+\newlength{\mytabcolsep}
+\setlength{\mytabcolsep}{0.75pt}
+% set zerowidth to the width of '0' in the current font
+\newlength{\zerowidth}
+\settowidth{\zerowidth}{0}
+\newlength{\normaltabcolsep}
+\setlength{\normaltabcolsep}{\tabcolsep}
+
+\begin{question}{30}
+  Consider the following pseudo-code for a faulty SARSA algorithm:
+%  \begin{algorithm}
+%    \caption{Faulty SARSA with $\epsilon\textrm{-greedy}$ policy}
+    \begin{algorithmic}
+      \Procedure{SARSA}{
+        %%     $\left(
+        %%     \begin{minipage}{3in}\raggedright
+        %%     Number of episodes $N\in\mathbb{N}$\hfill\linebreak
+        %%     discount factor $\lambda\in(0,1]$\hfill\linebreak
+        %%   learning rate $\alpha_n=\frac{1}{\log(n+1)}$
+        %%     \end{minipage}
+        %%     \right)$
+        number of episodes $N\in\mathbb{N}$\newline
+        \phantom{\textbf{procedure} SARSA (}
+        discount factor $\lambda\in(0,1]$\newline
+      \phantom{\textbf{procedure} SARSA (}
+      learning rate $\alpha_n=\frac{1}{\log(n+1)}$
+      }
+        %\Comment{This is a test}
+        \State Initialize matrices $Q(s,a)$ and $n(s,a)$ to $0, \forall s,a$
+        \For{episode $k \in 1,2,3,\ldots,n$}
+        \State $t\gets 1$
+        \State Initialize $s_1$ 
+        \State Choose $a_1$ from a uniform distribution over the actions
+        \While {Episode $k$ is not finished}
+        \State Take action $a_t$: observe reward $r_t$ and next state $s_{t+1}$
+        \State Choose $a_{t+1}$ from $s_{t+1}$ using $\mu_t$: an $\epsilon\textrm{-greedy}$ policy with respect to $Q$
+        \If {The current state is terminal} \Comment\emph{Compute target value}
+        \State $$y_t=0$$
+        \Else
+        \State $$y_t=r_t + \max_a Q(s_{t+1},a)$$
+        \EndIf
+        \State $n(s_t,a_t) \gets n(s_t,a_t) + 1$
+        \State Update Q function:
+        $$
+        Q(s_{t+1},a_{t+1})\gets Q(s_t,a_t) - \alpha_{n(s_t,a_t)}\left(y_t - Q(s_t,a_t)\right)
+        $$
+        \State $t\gets t + 1$
+        \EndWhile
+        \EndFor
+        \EndProcedure
+    \end{algorithmic}
+%  \end{algorithm}
+  Find all of the mistakes in the algorithm. Explain why they are mistakes, and correct them.
+  \begin{minipage}[t][5in]{\linewidth}
+    \ifanswers
+    Put answer here
+    \fi
+  \end{minipage}
+\end{question}
+
+ %---------------------------------------------------------------------
+ 
+\begin{question}{30}
+  Your friend found a variant of SARSA which is defined through a sequence of policies $\pi_t$ (where $t\ge 1$), and consists of just changing (in the previous algorithm {\bf after corrections}) the way the target is computed. The target becomes
+  $$
+  y_t = r_t + \lambda \sum_a \pi_t(a|s_{t+1})Q(S_{t+1},a),
+  $$
+  where $\pi_t(a|s)$  is the probability that $a$ is selected in state $s$ under policy $\pi_t.$
+
+  \begin{subquestion}
+    What sequence of policies $(\pi_t)$ % _{t\ge 1}$
+    should you choose so that the corresponding variant of SARSA is on-policy?
+    This variant is called Expected SARSA.
+  \begin{minipage}[t][1in]{\linewidth}
+  \end{minipage}
+  \end{subquestion}
+  
+  \begin{subquestion}
+    Consider an off-policy variant of SARSA correstponding to a stationary policy $\pi=\pi_t \forall t.$ Under this algorithm, do the Q values converge? If so, what are the limiting Q values?  Justify your answer.
+  \begin{minipage}[t][1in]{\linewidth}
+  \end{minipage}
+  \end{subquestion}
+
+\end{question}
+
+
+%-----------------------------------------------------------------------
+
+%% \begin{question}{10}
+%% http://www.cs.umd.edu/~djacobs/CMSC828DeepLearning/Midterm.pdf
+%% Suppose we have a neural network that has a loop in it (see Figure 1). So when it
+%% is given an input, it follows a circular computation. We can index these compu-
+%% tations by time. So we can say that the input is a d-dimensional vector, x. This
+%% is constant over time. At t = 1 we compute the first unit:
+%% z1(1) = w1 · x + b1
+%% a1(1) = max(0, z1(1))
+%% where w1 is a vector of length d, and b1 is a scalar bias. Then we have:
+%% z2(1) = w2a1(1) + b2
+%% a2(1) = max(0, z2(1))
+%% Here w2 is just a scalar weight. Similarly we have:
+%% z3(1) = w3a2(1) + b3
+%% a3(1) = max(0, z3(1))
+%% However, the ouput of the second unit feeds back into the first unit. So, at sub-
+%% sequent times, for t > 1 we have:
+%% z1(t) = w1 · x + b1 + w4a2(t − 1)
+%% a1(t) = max(0, z1(t))
+%% 1
+%% Figure 1: A network with a loop, used in Problem 1
+%% with the next steps largely unchanged:
+%% z2(t) = w2a1(t) + b2
+%% a2(t) = max(0, z2(t))
+%% z3(t) = w3a2(t) + b3
+%% a3(t) = max(0, z3(t))
+%% We repeat these computations T times. Then the output of the network is a3(T ).
+%% Suppose we train this network with a loss of:
+%% L(x, y) = 1
+%% 2n
+%% n∑
+%% i=1
+%% (yi − a3(xi, T ))2
+%% This is just the standard regression loss. yi denotes the i’th label, xi denotes a
+%% vector containing the i’th input, and a3(xi, T ) denotes the network output after
+%% T iterations, with an input of xi.
+%% • If we want to train the network using gradient descent, what is the gradient
+%% if we have T = 2?
+%% 2
+%% • Suppose we use the network by using T = ∞, and running the network
+%% until it converges. What is the gradient of the loss in this case?
+
+
+  
+%%   \begin{subquestion}
+%%   \end{subquestion}
+%%   \begin{minipage}[t][1in]{\linewidth}
+%%   \end{minipage}
+%%   \begin{subquestion}
+%%   \end{subquestion}
+%%   \begin{minipage}[t][1in]{\linewidth}
+%%   \end{minipage}
+  
+  
+%% \end{question}
+
+%-----------------------------------------------------------------------
+
+\end{document}

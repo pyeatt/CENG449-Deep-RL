@@ -1,0 +1,293 @@
+\documentclass[12pt]{exam}
+
+\usepackage{tikz}
+\newcommand{\tikzmark}[1]{\tikz[overlay,remember picture,node distance=0pt]\node(#1){};}
+\tikzstyle{line} = [draw, very thick, color=black!80, -latex']
+
+
+\newif\ifanswers
+\answersfalse
+%\answerstrue
+
+\newsavebox{\tmpbox}
+\usepackage{times}
+\usepackage{mathptmx}
+\usepackage{multicol}
+\usepackage{graphics}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{hyperref}
+%\usepackage{arm}
+%\usepackage{lstautogobble}
+%\lstloadlanguages{C}
+%\usepackage{eforms} % <-- the driver is pdftex or xetex
+
+\topmargin 0in
+\headheight 0in
+\headsep 0in
+\textwidth 6.5in
+\textheight 9in
+\evensidemargin 0in
+\oddsidemargin 0in
+
+\usepackage{color}
+\usepackage{xcolor}
+\newcommand{\lstcolor}{
+\lstset{
+  commentstyle=\color{green},
+  keywordstyle=[1]\color{blue},
+  keywordstyle=[2]\color{cyan},
+  keywordstyle=[3]\color{orange},
+  numberstyle=\tiny\color{gray},
+  stringstyle=\color{purple}
+}}
+
+\newcommand{\lstnocolor}{
+\lstset{
+  commentstyle=\color{black},
+  keywordstyle=[1]\color{black},
+  keywordstyle=[2]\color{black},
+  keywordstyle=[3]\color{black},
+  numberstyle=\tiny\color{black},
+  stringstyle=\color{black}
+}}
+
+\newlength{\mybasewidth}
+\settowidth{\mybasewidth}{\ttfamily\small m}
+\newlength{\mynormalbasewidth}
+\settowidth{\mynormalbasewidth}{\ttfamily m}
+\newlength{\footnotebasewidth}
+\settowidth{\footnotebasewidth}{\ttfamily\footnotesize m}
+
+\lstset{language=C,
+  backgroundcolor=\color{white},  % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}  
+  basicstyle=\ttfamily\small,
+  columns=fixed,
+  mathescape=true,
+  basewidth=\mybasewidth,
+  breakatwhitespace=true,        % sets if automatic breaks should only happen at whitespace
+  breaklines=false,               % sets automatic line breaking
+%  captionpos=b,                   % sets the caption-position to bottom
+  commentstyle=\color{green},   % comment style
+%  escapeinside={\{*}{*\}},         % if you want to add LaTeX within your code
+  extendedchars=false,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  escapechar=`,
+  frame=single,                   % adds a frame around the code
+  keywordstyle=[1]\color{blue},      % keyword style
+  keywordstyle=[2]\color{cyan},      % keyword style
+  keywordstyle=[3]\color{orange},
+  numbers=left,                   % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                  % how far the line-numbers are from the code
+  numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
+  rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,               % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,         % underline spaces within strings only
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  stepnumber=1,                   % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{purple},     % string literal style
+  tabsize=8                     % sets default tabsize to 2 spaces
+%  title=\lstname                  % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+\usepackage{pdfbase}
+\makeatletter
+\ExplSyntaxOn
+  \newcommand{\textField}[2]{
+    % register current font in /AcroForm <<...>> PDF dictionary
+    \pbs_add_form_font:
+    % get current text colour
+    \extractcolorspec{.}\@tempb
+    \expandafter\convertcolorspec\@tempb{rgb}\@tempb
+    \edef\@tempa{\expandafter\@rgbcomp\@tempb\@nil}
+    % insert Text Field
+    \raisebox{0.4\depth}{\makebox[#2][l]{
+      \pbs_pdfannot:nnnn{#2}{\ht\strutbox}{\dp\strutbox}{
+        /Subtype/Widget/FT/Tx/T (#1)
+        % set font, size, current colour
+        /DA (\pbs_last_form_font:\space\f@size\space Tf~\@tempa\space rg)
+        /MK<</BC [0~0~0]/BG [0.9~0.9~0.9]>>
+      }\strut
+    }}
+    % register Text Field in /AcroForm
+    \pbs_appendtofields:n{\pbs_pdflastann:}
+  }
+\ExplSyntaxOff
+\def\@rgbcomp#1,#2,#3\@nil{#1 #2 #3} %helper
+\makeatother  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% set of characters of the current font to be embedded
+\usepackage{luatex85}
+\newcommand{\embedChars}[1]{\pdfincludechars\font{#1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\title{CSC 449 Advanced Topics in Artificial Intelligence}
+\date{Deep Reinforcement Learning\\Exam 1\\Fall, \the\year}
+
+\begin{document}
+\maketitle
+
+
+
+\newlength{\mytabcolsep}
+\setlength{\mytabcolsep}{0.75pt}
+% set zerowidth to the width of '0' in the current font
+\newlength{\zerowidth}
+\settowidth{\zerowidth}{0}
+\newlength{\normaltabcolsep}
+\setlength{\normaltabcolsep}{\tabcolsep}
+
+ \begin{question}{30} 
+   %%   Put question here
+   Write the Bellman equation and describe each term in it.
+
+       \begin{minipage}[t][5in]{\linewidth}
+         \ifanswers
+         Put answer here
+         \fi
+       \end{minipage}
+
+%%   \begin{subquestion}  
+%%     Put subquestion here
+%%     \begin{minipage}[t][1.5in]{\linewidth}
+%%       \ifanswers
+%%       Put answer here
+%%       \fi
+%%     \end{minipage}
+%%   \end{subquestion}
+   \end{question}
+
+ %---------------------------------------------------------------------
+ 
+\begin{question}{30}
+  Assume that you are performing value iteration on a standard gridworld problem,   The immediate reward for taking any action in any state is $-1$, except for the RIGHT or DOWN actions in state 15.  The immediate reward for those actions is zero.  Taking an action that would move off the grid will cause the state to remain the same.
+
+  On iteration $i$, 
+  the policy, $\pi(s)$, and the current value function estimate, $V^i_\pi(s)$, are shown below.
+  \begin{center}
+    \begin{tabular}[c]{c|c|c|c|c|}
+      \multicolumn{5}{c}{$\pi(s)$}\\
+    State & $p(L)$ & $p(U)$ & $p(R)$ & $p(D)$ \\
+    \hline
+    \hline
+  $0$ & 0.2 & 0.1 & 0.4 & 0.3 \\
+  $1$ & 0.25 & 0.2 & 0.45 & 0.1 \\
+  $2$ & 0.4 & 0.25 & 0.15 & 0.2 \\
+  $3$ & 0.2 & 0.3 & 0.4 & 0.1 \\
+  $4$ & 0.4 & 0.4 & 0.1 & 0.1 \\
+  $5$ & 0.2 & 0.4 & 0.3 & 0.1 \\
+  $6$ & 0.4 & 0.25 & 0.3 & 0.05 \\
+  $7$ & 0.2 & 0.1 & 0.4 & 0.3 \\
+  $8$ & 0.4 & 0.3 & 0.2 & 0.1\\
+  $9$ & 0.3 & 0.2 & 0.4 & 0.1 \\
+  $10$ & 0.35 & 0.1 & 0.3 & 0.25 \\
+  $11$ & 0.25 & 0.1 & 0.3 & 0.35\\
+  $12$ & 0.25 & 0.4 & 0.05 & 0.3 \\
+  $13$ & 0.1 & 0.1 & 0.3 & 0.5\\
+  $14$ & 0.25 & 0.4 & 0.05 & 0.3 \\
+  $15$ & 0.3 & 0.25 & 0.1 & 0.35\\
+  \end{tabular} \hspace{0.5in}
+  \newlength{\gww}
+  \settowidth{\gww}{\scalebox{0.5}{\input{gridworld.pdf_t}}}
+  \parbox[c]{\gww}{
+    \centerline{$V^i_\pi(s)$}
+    \ \\
+    \scalebox{0.5}{\input{gridworld.pdf_t}}}
+  \end{center}
+  \begin{subquestion}
+  Assuming a discount factor, $\gamma$, of 0.1, calculate the new value for state nine, $V^{i+1}_\pi(s_9)$.
+  
+  \begin{minipage}[t][1in]{\linewidth}
+    \ifanswers
+    Put answer here
+%    \else
+%    \TextField[multiline=true,width=\linewidth,height=3.75in,name=f]{}
+    \fi
+  \end{minipage}
+  \end{subquestion}
+
+  \begin{subquestion}
+  Based on the value function above, $V^{i}_\pi(s)$, what appears to be the best deterministic policy for state one, $\mu(s_1)$.
+  
+  \begin{minipage}[t][1in]{\linewidth}
+    \ifanswers
+    Put answer here
+%    \else
+%    \TextField[multiline=true,width=\linewidth,height=3.75in,name=f]{}
+    \fi
+  \end{minipage}
+  \end{subquestion}
+
+  
+\end{question}
+
+
+%-----------------------------------------------------------------------
+
+\begin{question}{10} How do you determine:
+  \begin{subquestion}
+    When to stop the value iteration step while performing Generalized Policy Iteration?
+  \end{subquestion}
+  \begin{minipage}[t][1in]{\linewidth}
+  \end{minipage}
+  \begin{subquestion}
+  When to stop performing  Generalized Policy Iteration?
+  \end{subquestion}
+  \begin{minipage}[t][1in]{\linewidth}
+  \end{minipage}
+  
+  
+\end{question}
+
+%-----------------------------------------------------------------------
+ \begin{question}{30} 
+   %%   Put question here
+   Write the algorithm for either Q-Learning or Sarsa, and indicate which one you have provided.
+
+       \begin{minipage}[t][5in]{\linewidth}
+         \ifanswers
+         Put answer here
+         \fi
+       \end{minipage}
+
+%%   \begin{subquestion}  
+%%     Put subquestion here
+%%     \begin{minipage}[t][1.5in]{\linewidth}
+%%       \ifanswers
+%%       Put answer here
+%%       \fi
+%%     \end{minipage}
+%%   \end{subquestion}
+   \end{question}
+
+%-----------------------------------------------------------------------
+
+
+ %% \begin{question}{50} 
+%%   Put question here
+  
+%%   \begin{subquestion}  
+%%     Put subquestion here
+%%     \begin{minipage}[t][1.5in]{\linewidth}
+%%       \ifanswers
+%%       Put answer here
+%%       \fi
+%%     \end{minipage}
+%%   \end{subquestion}
+  
+%%   \begin{subquestion}  
+%%     Put subquestion here
+%%     \begin{minipage}[t][1.5in]{\linewidth}
+%%       \ifanswers
+%%       Put answer here
+%%       \fi
+%%     \end{minipage}
+%%   \end{subquestion}
+%% \end{question}
+
+
+
+
+\end{document}

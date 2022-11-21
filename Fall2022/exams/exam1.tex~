@@ -1,0 +1,435 @@
+\documentclass[12pt]{exam}
+
+\usepackage{tikz}
+\newcommand{\tikzmark}[1]{\tikz[overlay,remember picture,node distance=0pt]\node(#1){};}
+\tikzstyle{line} = [draw, very thick, color=black!80, -latex']
+
+
+\newif\ifanswers
+\answersfalse
+%\answerstrue
+
+\newsavebox{\tmpbox}
+%\usepackage{times}
+\usepackage{graphics}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{hyperref}
+%\usepackage{arm}
+%\usepackage{lstautogobble}
+%\lstloadlanguages{C}
+%\usepackage{eforms} % <-- the driver is pdftex or xetex
+
+\topmargin 0in
+\headheight 0in
+\headsep 0in
+\textwidth 6.5in
+\textheight 9in
+\evensidemargin 0in
+\oddsidemargin 0in
+
+\usepackage{color}
+\usepackage{xcolor}
+\newcommand{\lstcolor}{
+\lstset{
+  commentstyle=\color{green},
+  keywordstyle=[1]\color{blue},
+  keywordstyle=[2]\color{cyan},
+  keywordstyle=[3]\color{orange},
+  numberstyle=\tiny\color{gray},
+  stringstyle=\color{purple}
+}}
+
+\newcommand{\lstnocolor}{
+\lstset{
+  commentstyle=\color{black},
+  keywordstyle=[1]\color{black},
+  keywordstyle=[2]\color{black},
+  keywordstyle=[3]\color{black},
+  numberstyle=\tiny\color{black},
+  stringstyle=\color{black}
+}}
+
+\newlength{\mybasewidth}
+\settowidth{\mybasewidth}{\ttfamily\small m}
+\newlength{\mynormalbasewidth}
+\settowidth{\mynormalbasewidth}{\ttfamily m}
+\newlength{\footnotebasewidth}
+\settowidth{\footnotebasewidth}{\ttfamily\footnotesize m}
+
+\lstset{language=C,
+  backgroundcolor=\color{white},  % choose the background color; you must add \usepackage{color} or \usepackage{xcolor}  
+  basicstyle=\ttfamily\small,
+  columns=fixed,
+  mathescape=true,
+  basewidth=\mybasewidth,
+  breakatwhitespace=true,        % sets if automatic breaks should only happen at whitespace
+  breaklines=false,               % sets automatic line breaking
+%  captionpos=b,                   % sets the caption-position to bottom
+  commentstyle=\color{green},   % comment style
+%  escapeinside={\{*}{*\}},         % if you want to add LaTeX within your code
+  extendedchars=false,              % lets you use non-ASCII characters; for 8-bits encodings only, does not work with UTF-8
+  escapechar=`,
+  frame=single,                   % adds a frame around the code
+  keywordstyle=[1]\color{blue},      % keyword style
+  keywordstyle=[2]\color{cyan},      % keyword style
+  keywordstyle=[3]\color{orange},
+  numbers=left,                   % where to put the line-numbers; possible values are (none, left, right)
+  numbersep=5pt,                  % how far the line-numbers are from the code
+  numberstyle=\tiny\color{gray},  % the style that is used for the line-numbers
+  rulecolor=\color{black},        % if not set, the frame-color may be changed on line-breaks within not-black text (e.g. comments (green here))
+  showspaces=false,               % show spaces everywhere adding particular underscores; it overrides 'showstringspaces'
+  showstringspaces=false,         % underline spaces within strings only
+  showtabs=false,                 % show tabs within strings adding particular underscores
+  stepnumber=1,                   % the step between two line-numbers. If it's 1, each line will be numbered
+  stringstyle=\color{purple},     % string literal style
+  tabsize=8                     % sets default tabsize to 2 spaces
+%  title=\lstname                  % show the filename of files included with \lstinputlisting; also try caption instead of title
+}
+
+\usepackage{pdfbase}
+\makeatletter
+\ExplSyntaxOn
+  \newcommand{\textField}[2]{
+    % register current font in /AcroForm <<...>> PDF dictionary
+    \pbs_add_form_font:
+    % get current text colour
+    \extractcolorspec{.}\@tempb
+    \expandafter\convertcolorspec\@tempb{rgb}\@tempb
+    \edef\@tempa{\expandafter\@rgbcomp\@tempb\@nil}
+    % insert Text Field
+    \raisebox{0.4\depth}{\makebox[#2][l]{
+      \pbs_pdfannot:nnnn{#2}{\ht\strutbox}{\dp\strutbox}{
+        /Subtype/Widget/FT/Tx/T (#1)
+        % set font, size, current colour
+        /DA (\pbs_last_form_font:\space\f@size\space Tf~\@tempa\space rg)
+        /MK<</BC [0~0~0]/BG [0.9~0.9~0.9]>>
+      }\strut
+    }}
+    % register Text Field in /AcroForm
+    \pbs_appendtofields:n{\pbs_pdflastann:}
+  }
+\ExplSyntaxOff
+\def\@rgbcomp#1,#2,#3\@nil{#1 #2 #3} %helper
+\makeatother  
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% set of characters of the current font to be embedded
+\usepackage{luatex85}
+\newcommand{\embedChars}[1]{\pdfincludechars\font{#1}}
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
+\title{CENG 448 Real Time Operating Systems\\Exam 1}
+\author{}
+\date{Fall, \the\year}
+
+\begin{document}
+\maketitle
+
+
+
+\newlength{\mytabcolsep}
+\setlength{\mytabcolsep}{0.75pt}
+% set zerowidth to the width of '0' in the current font
+\newlength{\zerowidth}
+\settowidth{\zerowidth}{0}
+\newlength{\normaltabcolsep}
+\setlength{\normaltabcolsep}{\tabcolsep}
+
+%% \begin{question}{10}
+%%   A computer is using an 8-bit word size to store some numerical values.  The numbers are all stored as fixed point numbers in S(5,2) format (A.K.A Q5.2).  Fill in the missing entries in this partial table:
+%% \begin{center}
+%% \setlength{\extrarowheight}{8pt}  
+%%   \begin{tabular}{|>{\centering\arraybackslash}p{2.5in}|>{\centering\arraybackslash}p{2.5in}|}
+%%     \hline
+%%     00000000 & \ifanswers\bf 0.0\else\TextField[width=2.5in,height=0.5\baselineskip,name=a]{}\fi \\
+%%     \hline
+%% 00000001 & \ifanswers\bf 0.25\else\TextField[width=2.5in,height=0.5\baselineskip,name=b]{}\fi\\
+%%     \hline
+%% 10111010 & \ifanswers\bf -19.5\else\TextField[width=2.5in,height=0.5\baselineskip,name=c]{}\fi\\
+%%     \hline
+%% \ifanswers\bf 00011110\else\TextField[width=2.5in,height=0.5\baselineskip,name=d]{}\fi & 7.5\\
+%%     \hline
+%%   \end{tabular}
+%%   \end{center}
+%% \end{question}
+
+
+%% \begin{question}{20}
+%%   Write a C functon that uses fixed point math to calculate
+%%   $$
+%%   f = \frac{x^2 + y^2 -1}{z}
+%%   $$
+%%   where $x$, $y$, and $z$ are all given as S(7,8) numbers, and the result $f$ must be an S(19,12) number.  For 5 points extra credit, correctly round the result.
+%%   \begin{minipage}[t][3.5in]{\linewidth}
+%%     \ifanswers
+%%     Put answer here
+%%     \else
+%%     \begin{Form}
+%%       \tt
+%%       \embedChars{ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789- /}%
+%%       \TextField[multiline=true,width=\linewidth,height=3.5in,name=e,format={var f = this.getField('e'); f.textFont = 'Courier';},onfocus={var f = this.getField('e'); f.textFont = 'Courier';}]{}
+%%     \end{Form}
+%%     \fi
+%%   \end{minipage}
+%% \end{question}
+
+\begin{question}{15}
+  Draw a state diagram showing the possible states for a task (or process, or thread), with labeled arcs describing how the task can move from one state to another.
+  
+  \begin{minipage}[t][3.75in]{\linewidth}
+    \ifanswers
+    Put answer here
+%    \else
+%    \TextField[multiline=true,width=\linewidth,height=3.75in,name=f]{}
+    \fi
+  \end{minipage}
+\end{question}
+
+
+%% \begin{question}{10} (short answer)  What is an embedded system?
+  
+%%   \begin{minipage}[t][2.25in]{\linewidth}
+%%     \ifanswers
+%% Any computer system who’s primary goal is not
+%% general-purpose computation.
+
+%% \emph{or}
+
+%% Computing systems with tightly coupled hardware and software
+%% integration, that are designed to perform a dedicated function.
+
+%%     \fi
+%%   \end{minipage}
+%% \end{question}
+
+
+\begin{question}{10} (short answer)  What is (are) the key difference(s) between a loader and a monitor?
+  \vspace{4pt}
+  
+  \begin{minipage}[t][3.7in]{\linewidth}
+    \ifanswers
+  The monitor is a more complex embedded software application that
+  is stored in ROM. It typically
+  \begin{itemize}
+  \item Initializes some or all peripheral devices (especially critical devices such as serial interfaces, timers, DRAM refresh circuitry, etc.)
+  \item initializes the memory system and prepares for image download,
+  \item initializes interrupt controller and installs default interrupt handler functions, and
+    \item  provides a command line interface through some device (typically RS232 UART).
+  \end{itemize}
+ The command line interface typically allows the developer to
+  \begin{itemize}
+  \item download the image,
+  \item read and write system memory locations,
+  \item read and write system registers,
+  \item set and clear program breakpoints,
+  \item single step instructions, and
+  \item reset the system.
+  \end{itemize}
+
+  Some monitors provide a \emph{target debug agent}, instead of (or in addition to) a command-line interface.
+
+  \vspace{\baselineskip}
+  The target debug agent can communicate with the debugger on the host to provide source-level debugging.
+%    \else
+%    \TextField[multiline=true,width=\linewidth,height=3.7in,name=g]{}
+    \fi
+  \end{minipage}
+\end{question}
+
+
+\begin{question}{10} (short answer)  What is the difference between a hard real-time system and a soft real-time system?
+  \vspace{2pt}
+  
+  \begin{minipage}[t][3in]{\linewidth}
+    \ifanswers
+    
+ \begin{description}
+    \item[Hard] real time systems must meet deadlines with a near-zero degree of flexibility.  Missing a deadline is catastrophic.  Results obtained after the deadline are either useless, or have a high rate of depreciation.
+    \item[Soft] real time systems have a degree of flexibility.  Missing a deadline is undesirable, but not catastrophic.  Results obtained after the deadline have a moderate rate of depreciation.  Late results can have a cost associated with them.
+    \end{description}
+%    \else
+%    \TextField[multiline=true,width=\linewidth,height=3in,name=h]{}
+    \fi
+  \end{minipage}
+\end{question}
+
+%% \begin{question}{15} (short answer)  List/describe some major differences between a general purpose OS and a real-time OS.
+%%   \vspace{2pt}
+  
+%%   \begin{minipage}[t][3.5in]{\linewidth}
+%%     \ifanswers
+    
+%%  \begin{description}
+%% \item[General Purpose OS:]
+%%   \begin{itemize}
+%% \item     Support multitasking
+%% \item     Manage resources
+%% \item     Provide abstraction for applications
+%% \item     Provide OS services to the applications
+%% \item     Provide protection
+%% \item     Provide security
+%% \end{itemize}
+
+%% All of this is to provide a good environment for the computer user to conveniently and efficiently interact with the machine.
+  
+
+%% \item[Real Time OS:]
+%%   An RTOS is not so concerned with the user experience, but must provide:
+%%   \begin{itemize}
+%%   \item Very high reliability
+%%   \item Ability to scale up or down to fit the application and hardware
+%%   \item Guaranteed performance
+%%   \item Faster performance
+%%   \item Modest memory requirements
+%%   \item Scheduling of tasks to support real-time response
+%%   \item Diskless booting
+%%   \item High portability
+%%   \end{itemize}
+
+%%   Protecting tasks from each other is not as big a concern, unless Todd is on your software team, and is writing one of the tasks.
+  
+%%     \end{description}
+%% %    \else
+%% %    \TextField[multiline=true,width=\linewidth,height=4in,name=i]{}
+%%     \fi
+%%   \end{minipage}
+%% \end{question}
+
+
+%% \begin{question}{10} 
+%%   Name and describe two scheduling policies that could be used by a scheduler.
+%%   \begin{minipage}[t][3in]{\linewidth}
+%%     \ifanswers
+    
+%%  \begin{description}
+%%     \item[Preemptive Priority-Based] scheduling allows tasks with higher priority to preempt tasks with lower priority.  Basically, every time the kernel code is entered (interrupt or system call) the scheduler will choose the highest priority task on the run queue.
+%%     \item[Round-Robin] scheduling gives each task an equal share of the CPU, by always taking the first task on the run queue. Every time a task gets to run, it is moved to the end of the queue.  Typically done with a timer (time slicing).  This can be combined with a priority scheme, where some groups of tasks have higher priority, or get a longer time slice.
+%%   \end{description}
+
+%%       \fi
+%%     \end{minipage}
+%% \end{question}
+
+\begin{question}{20} 
+  Name and describe some task-related operations typically provided by a real-time OS. ( 13 were mentioned in class)
+  
+  \begin{minipage}[t][3.5in]{\linewidth}
+    \ifanswers
+    \begin{itemize}
+    \item Creation and Deletion
+      \begin{description}
+      \item[Create:] Creates a task
+      \item[Delete:] Deletes a task
+      \end{description}
+    \item Task Information
+      \begin{description}
+      \item[Get ID:] Get the task's unique ID.
+      \item[Get TCB:] Get pointer to task's TCB.
+      \item[Get Name:] Get task's unique name.
+      \end{description}
+    \item Scheduling
+      \begin{description}
+      \item[Suspend:] Makes task wait until another task resumes it.
+      \item[Resume:] Allows task to run again.
+      \item[Delay:] Puts task to sleep for specified time.
+      \item[Restart:] Kills and restarts a task.
+      \item[Get Priority:] Gets task's current priority.
+      \item[Set Priority:] Sets task's current priority.
+      \item[Preemption Lock:] Locks out higher priority tasks from preempting the current task.
+      \item[Preemption Unlock:] Allows higher priority tasks to preempt.
+      \end{description}
+    \end{itemize}
+%    \else
+%    \TextField[multiline=true,width=\linewidth,height=5in,name=j]{}
+    \fi
+  \end{minipage}
+\end{question}
+
+
+\begin{question}{25} Explain how the \emph{hardware} and \emph{software} work together to handle exceptions.  Use diagrams, if necessary, and be sure to indicate which actions are taken by hardware, and which actions are taken by software.
+
+  
+  
+    \begin{minipage}[t][6in]{\linewidth}
+      \ifanswers
+      \begin{center}
+        \input{complex_exception.pdf_t}
+        \end{center}
+\begin{itemize}
+\item    Transitioning from user process to the exception handler is done automatically by hardware.  It also saves the most critical CPU state information in some CPU specific way.
+\item
+    Going from the exception handler code back to user state involves a special instruction that causes several things to happen in the hardware, in order to finish restoring the User Process state.
+
+\item
+    All the rest is software, which may interact with the hardware by reading/writing hardware registers.
+\end{itemize}
+      \fi
+
+    \end{minipage}
+  \end{question}
+
+  \begin{question}{10} Exception processing may be broken into two parts (an exception handler and a daemon task).  What are the pros/cons of doing this?
+      
+      \begin{minipage}[t][2in]{\linewidth}
+    \end{minipage}
+  \end{question}
+  
+
+
+   \begin{question}{10} Timers
+  \vspace{\baselineskip}
+      \begin{subquestion}
+    In an RTOS, timers can be implemented in
+    (circle the two that apply).
+  \vspace{\baselineskip}
+  \begin{center}
+      \begin{tabular}{ccc}
+        hardware        & & shareware\\
+        & & \\
+        bakeware   &\phantom{goobers and peanuts}& firmware \\
+        & & \\
+        software & & silverware\\
+      \end{tabular}
+    \end{center}
+      \end{subquestion}
+
+  \vspace{\baselineskip}
+      \begin{subquestion}
+        List the pros and cons of the two types of timers you circled.
+
+        \begin{minipage}[t][2in]{\linewidth}
+    \end{minipage}
+  \end{subquestion}
+
+      \end{question}
+
+  
+%% \begin{question}{50} 
+%%   Put question here
+  
+%%   \begin{subquestion}  
+%%     Put subquestion here
+%%     \begin{minipage}[t][1.5in]{\linewidth}
+%%       \ifanswers
+%%       Put answer here
+%%       \fi
+%%     \end{minipage}
+%%   \end{subquestion}
+  
+%%   \begin{subquestion}  
+%%     Put subquestion here
+%%     \begin{minipage}[t][1.5in]{\linewidth}
+%%       \ifanswers
+%%       Put answer here
+%%       \fi
+%%     \end{minipage}
+%%   \end{subquestion}
+%% \end{question}
+
+
+
+
+\end{document}

@@ -1,0 +1,73 @@
+\documentclass{article}
+\textwidth 6.5in
+\textheight 9in
+\evensidemargin  0in
+\oddsidemargin  0in
+\topmargin 0in
+\headheight 0in
+\headsep 0in
+
+\usepackage{array}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{ltablex}
+\usepackage{multicol}
+\usepackage{color}
+\lstset{basicstyle={\tt}}
+
+
+
+\begin{document}
+
+\centerline{\bf CSC 448/548 Advanced Topics in Artificial Intelligence}
+\centerline{\bf Deep Reinforcement Learning}
+\centerline{Fall, 2022}
+\vspace{\baselineskip}
+\centerline{\bf Programming Assignment 1}
+\vspace{\baselineskip}
+
+Your task is to implement General Policy Iteration on a Gridworld
+problem.  The Gridworld that you are to implement is a variation of
+the one described in the textbook and lectures.  There are 16 states,
+and the transition probability function $\textrm{p}(s'|sa)$ is
+deterministic.  You may  have seen $\textrm{p}(s'|s,a)$ given as
+$\textrm{p}(s,a,s')$. These notations are, for our purposes, equivalent. The following figure shows the state numbers:
+\begin{center}
+\input{states.pdf_t}
+\end{center}
+The dynamics of this variation of the Gridworld are described as follows:
+\begin{itemize}
+\item States 8 and 15 are special.
+  \begin{itemize}
+  \item State 8 is a ``magic teleporter'', but using it is
+    expensive. In state 8, the LEFT action takes you to state 15 with
+    probability 1 and immediate reward -2.
+  \item In state 15, the RIGHT and DOWN actions take you back to state 15 with probability 1 and immediate reward 0.
+  \end{itemize}
+\item In all states other than states 8 and 15, choosing an action that would move you off the grid will move you back into the original state with a reward of -1.
+  \item In all remaining cases, choosing an action will move you to an adjacent
+    state within the grid with probability 1 and an immediate reward
+    of -1.  For example, choosing the DOWN action in state 5 will take you to state 9 with probability 1 and immediate reward -1. 
+\end{itemize}
+Feel free to ask if you need any further clarification.
+
+\subsection*{Undergraduate Students}
+Write a program that calculates and prints out one optimal deterministic policy for this variation of the Gridworld, and the value function $v_*(s)$ for that policy.
+
+\subsection*{Graduate Students}
+Write a program that
+\begin{itemize}
+\item calculates and prints out one optimal deterministic policy for this variation of the Gridworld and the value function $v_*(s)$ for that policy,
+\item calculates and prints out an optimal stochastic policy (if one exists) and the value function $v_*(s)$ for that policy, and
+  \item reports the number of optimal deterministic policies that exist for this problem.
+\end{itemize}
+\subsection*{Hints}
+
+In the slides, the reward function is given as $\textrm{r}(s)$, which is the expected immediate reward for being  in state $s$. His notation is sloppy.  I think that he should have used  $\textrm{r}(s')$, which would be the reward for being in state $s'$. In practice, it may be better to use the reward function $\textrm{r}(s,a)$, which is the expected immediate reward for taking action $a$ in state $s$.  For example, the reward for taking the LEFT action in state 8 is -2, and the reward for taking the RIGHT or DOWN actions in state 15 is zero.  The reward for all other actions in any state is -1. That is pretty easy to code.
+
+You may use any language that you prefer. but COBOL is probably not a good choice.
+
+
+
+\end{document}

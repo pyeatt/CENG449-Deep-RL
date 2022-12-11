@@ -1,0 +1,72 @@
+\documentclass[12pt]{article}
+
+\textwidth 6.5in
+\textheight 9in
+\evensidemargin 0in
+\oddsidemargin 0in
+\topmargin 0in
+\headheight 0in
+\headsep 0in
+
+\usepackage{times}
+\usepackage{hyperref}
+\usepackage{tabularx}
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage{listings}
+\newlength{\listwidth}
+\setlength{\listwidth}{\textwidth}
+\addtolength{\listwidth}{-20pt}
+
+\newlength{\smallbasewidth}
+\settowidth{\smallbasewidth}{\ttfamily\small m}
+\newlength{\footnotebasewidth}
+\settowidth{\footnotebasewidth}{\ttfamily\footnotesize m}
+\newlength{\scriptbasewidth}
+\settowidth{\scriptbasewidth}{\ttfamily\scriptsize m}
+
+\makeatletter
+\lstdefinestyle{mystyle}{
+  basewidth=\footnotebasewidth,
+  basicstyle=\ttfamily\lst@ifdisplaystyle\ttfamily\footnotesize\fi
+}
+\makeatother
+
+
+\lstset{language=C,style=mystyle,frame=tlrb,framesep=10pt,linewidth=\listwidth,xleftmargin=12pt,xrightmargin=-8pt,framerule=2pt}
+
+\begin{document}
+\begin{center}
+  {
+  \bf\large
+  CSC  449/549 --- Advanced Topics in Artificial Intelligence\\
+  Deep Reinforcement Learning
+  }\\
+  Fall, 2022\\
+\ \\
+    {\bf
+      Programming Assignment 3
+    }
+  
+\end{center}
+Implement Sarsa($\lambda$) for the Mountain Car problem as described in Sutton and Barto. Use linear function approximation with Fourier basis functions. \url{https://people.cs.umass.edu/~pthomas/papers/Konidaris2011a.pdf}
+
+Write a report, and include at lesat the following:
+\begin{enumerate}
+\item Show learning curves for order 3, 5, and 7 Fourier bases, for a fixed setting of $\alpha$ and $\epsilon$, and $\gamma = 1$, $\lambda = 0.9$.
+
+\item Create a surface plot of the value function (the negative of the value function) of the learned policies after 1, 000 episodes,
+for the above orders. (Hint: Your plot should look like the one in Sutton and Barto, but smoother.)
+
+\item The Mountain Car contains a negative step reward and a zero goal reward. What would happen if $\gamma$ was less than
+1 and the solution was many steps long? What would happen if we had a zero step cost and a positive goal reward,
+for the case where $\gamma = 1$, and the case where $\gamma < 1$?
+\end{enumerate}
+
+Turn in your report and your code.
+
+
+\end{document}

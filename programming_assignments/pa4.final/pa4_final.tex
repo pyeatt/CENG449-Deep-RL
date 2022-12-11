@@ -1,0 +1,92 @@
+\documentclass[12pt]{article}
+
+\textwidth 6.5in
+\textheight 9in
+\evensidemargin 0in
+\oddsidemargin 0in
+\topmargin 0in
+\headheight 0in
+\headsep 0in
+
+\usepackage{times}
+\usepackage{hyperref}
+\usepackage{tabularx}
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage{listings}
+\newlength{\listwidth}
+\setlength{\listwidth}{\textwidth}
+\addtolength{\listwidth}{-20pt}
+
+\newlength{\smallbasewidth}
+\settowidth{\smallbasewidth}{\ttfamily\small m}
+\newlength{\footnotebasewidth}
+\settowidth{\footnotebasewidth}{\ttfamily\footnotesize m}
+\newlength{\scriptbasewidth}
+\settowidth{\scriptbasewidth}{\ttfamily\scriptsize m}
+
+\makeatletter
+\lstdefinestyle{mystyle}{
+  basewidth=\footnotebasewidth,
+  basicstyle=\ttfamily\lst@ifdisplaystyle\ttfamily\footnotesize\fi
+}
+\makeatother
+
+
+\lstset{language=C,style=mystyle,frame=tlrb,framesep=10pt,linewidth=\listwidth,xleftmargin=12pt,xrightmargin=-8pt,framerule=2pt}
+
+\begin{document}
+\begin{center}
+  {
+  \bf\large
+  CSC  449/549 --- Advanced Topics in Artificial Intelligence\\
+  Deep Reinforcement Learning
+  }\\
+  Fall, 2022\\
+\ \\
+    {\bf
+      Alternative Final Exam
+    }
+  
+\end{center}
+Implement Sarsa($\lambda$) for the Pole Balancing problem as described
+in Sutton and Barto. Use linear function approximation. You can use any method you want to create the feature vector, including but not limited to:
+\begin{itemize}
+\item Fourier
+basis
+functions,
+\item radial basis functions,
+\item polynomial basis functions,
+\item deep learning techniques.
+\end{itemize}
+
+Write a report to describe your approach, citing any sources as appropriate. 
+Your report should follow a typical conference research paper outline with the following sections:
+\begin{itemize}
+  \item Abstract
+  \item Introduction/Background
+  \item Related Work
+  \item Description of experiments
+  \item Results
+  \item Comments and Future Work
+  \item References
+\end{itemize}
+You should show at least nine learning curves (multiple curves can be shown on the same graph) for various parameter settings. Your report should be between 6 and 10 pages in length, ten to twelve point font, single-spaced, one or two columns.
+
+
+%\item Create a surface plot of the value function (the negative of the value function) of the learned policies after 1, 000 episodes,
+%for the above orders. (Hint: Your plot should look like the one in Sutton and Barto, but smoother.)
+
+
+  %The Mountain Car contains a negative step reward and a zero goal reward. What would happen if $\gamma$ was less than
+%1 and the solution was many steps long? What would happen if we had a zero step cost and a positive goal reward,
+%for the case where $\gamma = 1$, and the case where $\gamma < 1$?
+%\end{enumerate}
+
+Turn in your report and your code through D2L.
+
+
+\end{document}

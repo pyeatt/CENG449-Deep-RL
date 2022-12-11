@@ -1,0 +1,62 @@
+\documentclass[12pt]{article}
+
+\textwidth 6.5in
+\textheight 9in
+\evensidemargin 0in
+\oddsidemargin 0in
+\topmargin 0in
+\headheight 0in
+\headsep 0in
+
+\usepackage{times}
+\usepackage{hyperref}
+\usepackage{tabularx}
+\newcolumntype{Y}{>{\centering\arraybackslash}X}
+
+\usepackage{graphicx}
+\usepackage{color}
+
+\usepackage{listings}
+\newlength{\listwidth}
+\setlength{\listwidth}{\textwidth}
+\addtolength{\listwidth}{-20pt}
+
+\newlength{\smallbasewidth}
+\settowidth{\smallbasewidth}{\ttfamily\small m}
+\newlength{\footnotebasewidth}
+\settowidth{\footnotebasewidth}{\ttfamily\footnotesize m}
+\newlength{\scriptbasewidth}
+\settowidth{\scriptbasewidth}{\ttfamily\scriptsize m}
+
+\makeatletter
+\lstdefinestyle{mystyle}{
+  basewidth=\footnotebasewidth,
+  basicstyle=\ttfamily\lst@ifdisplaystyle\ttfamily\footnotesize\fi
+}
+\makeatother
+
+
+\lstset{language=C,style=mystyle,frame=tlrb,framesep=10pt,linewidth=\listwidth,xleftmargin=12pt,xrightmargin=-8pt,framerule=2pt}
+
+\begin{document}
+\begin{center}
+  {
+  \bf\large
+  CSC  449/549 --- Advanced Topics in Artificial Intelligence\\
+  Deep Reinforcement Learning
+  }\\
+  Fall, 2022\\
+\ \\
+    {\bf
+      Programming Assignment 2
+    }
+  
+\end{center}
+
+Your assignment is to implement an inverted pendulum controller using tabular TD.  Sarsa or Q-learning should work for this problem.  You can use Jonathan Mathews' simulator, which can be found on GitHub at \url{https://github.com/ben-rambam/reinforcement_sim}.
+Other simulators are available online, or you can build your own simulator using the differential equations.
+The equations and approach can be found here \url{https://www.cantorsparadise.com/modelling-and-simulation-of-inverted-pendulum-5ac423fed8ac}.
+
+Although the implementation of tabular TD is pretty straightforward, you will probably need multiple trials to get the parameters tuned.  If you wait until the last minute, you will not have enough time to get it working well.
+
+\end{document}

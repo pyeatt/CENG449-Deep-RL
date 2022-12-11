@@ -1,0 +1,35 @@
+\documentclass{article}
+\textwidth 6.5in
+\textheight 9in
+\evensidemargin  0in
+\oddsidemargin  0in
+\topmargin 0in
+\headheight 0in
+\headsep 0in
+
+\usepackage{array}
+\usepackage{listings}
+\usepackage{graphicx}
+\usepackage{tabularx}
+\usepackage{ltablex}
+\usepackage{multicol}
+\usepackage{color}
+\lstset{basicstyle={\tt}}
+
+
+
+\begin{document}
+
+\centerline{\bf CSC 448/548 Advanced Topics in Artificial Intelligence}
+\centerline{\bf Deep Reinforcement Learning}
+\centerline{Fall, 2022}
+\vspace{\baselineskip}
+\centerline{\bf Programming Assignment 1}
+
+Your task is to implement General Policy Iteration on a Gridworld problem.
+The gridworld that you are to implement is described in the texbook and lectures.  There are 16 states, and the transition propability function $\text{p}(s'|sa)$ is deterministic.  You may also have seen $text{p}(s'|s,a)$ given as $\text{p}(s,a,s')$. These notations are, for our purposes, equivalent. 
+
+
+
+
+\end{document}

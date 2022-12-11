@@ -126,8 +126,8 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
-\title{CSC 449 Advanced Topics in Artificial Intelligence}
-\date{Deep Reinforcement Learning\\Exam 2\\Fall, \the\year}
+\title{CSC 449/549 Advanced Topics in Artificial Intelligence}
+\date{Deep Reinforcement Learning\\Final Exam\\Fall, \the\year}
 
 \usepackage{algorithm}
 %\usepackage{arevmath}     % For math symbols
@@ -137,38 +137,6 @@
 \begin{document}
 \maketitle
 
-Your solutions to these problems should be uploaded to D2L as a single
-pdf file by the deadline. You may turn in the
-solution up to two days late, with a penalty of 10\% per day, and you
-should only upload one version of your solutions.
-
-This exam is individual and open book. You may consult any reference
-work. If you make specific use of a reference outside those on the
-course web page in solving a problem, include a citation to that
-reference.
-
-%% So, for example, if you consult a general reference to understand the
-%% meaning of VC-dimension, you don’t need to cite that.  But if you find
-%% a reference that contains a specific result that you draw on in
-%% solving the problem on VC-dimension, please cite that.
-
-You may discuss the course material in general with other students,
-but you must work on the solutions to the problems on your own.
-
-%% So, again, you can discuss the definition of VC-dimension with other
-%% students. You can even go over the VC-dimension of a different problem
-%% with other students. But you should not work on the specific problem
-%% in this midterm with other students.
-
-It is difficult to write questions in
-which every possibility is taken into account. As a result, there may sometimes
-be ``trick'' answers that are simple and avoid addressing the
-intended problem. Such trick answers will not receive credit. As an
-example, suppose we said, use the chain rule to compute $\frac{\partial z}{\partial x}$ with $z =
-\frac{7}{y}$ and $y = x^2$. A trick answer would be to say that the partial
-deriviative is not well defined because $y$ might equal $0$. A correct
-answer might note this, but would then give the correct partial
-derivative when $y \ne 0$.
 
 \newlength{\mytabcolsep}
 \setlength{\mytabcolsep}{0.75pt}
@@ -178,85 +146,180 @@ derivative when $y \ne 0$.
 \newlength{\normaltabcolsep}
 \setlength{\normaltabcolsep}{\tabcolsep}
 
-\begin{question}{40}
-  Consider the following pseudo-code for a faulty SARSA algorithm:
-%  \begin{algorithm}
-%    \caption{Faulty SARSA with $\epsilon\textrm{-greedy}$ policy}
-    \begin{algorithmic}
-      \Procedure{SARSA}{
-        %%     $\left(
-        %%     \begin{minipage}{3in}\raggedright
-        %%     Number of episodes $N\in\mathbb{N}$\hfill\linebreak
-        %%     discount factor $\lambda\in(0,1]$\hfill\linebreak
-        %%   learning rate $\alpha_n=\frac{1}{\log(n+1)}$
-        %%     \end{minipage}
-        %%     \right)$
-        number of episodes $N\in\mathbb{N}$\newline
-        \phantom{\textbf{procedure} SARSA (}
-        discount factor $\lambda\in(0,1]$\newline
-      \phantom{\textbf{procedure} SARSA (}
-      learning rate $\alpha_n=\frac{1}{\log(n+1)}$
-      }
-        %\Comment{This is a test}
-        \State Initialize matrices $Q(s,a)$ and $n(s,a)$ to $0, \forall s,a$
-        \For{episode $k \in 1,2,3,\ldots,n$}
-        \State $t\gets 1$
-        \State Initialize $s_1$ 
-        \State Choose $a_1$ from a uniform distribution over the actions
-        \While {Episode $k$ is not finished}
-        \State Take action $a_t$: observe reward $r_t$ and next state $s_{t+1}$
-        \State Choose $a_{t+1}$ from $s_{t+1}$ using $\mu_t$: an $\epsilon\textrm{-greedy}$ policy with respect to $Q$
-        \If {The current state is terminal} \Comment\emph{Compute target value}
-        \State $$y_t=0$$
-        \Else
-        \State $$y_t=r_t + \max_a Q(s_{t+1},a)$$
-        \EndIf
-        \State $n(s_t,a_t) \gets n(s_t,a_t) + 1$
-        \State Update Q function:
-        $$
-        Q(s_{t+1},a_{t+1})\gets Q(s_t,a_t) - \alpha_{n(s_t,a_t)}\left(y_t - Q(s_t,a_t)\right)
-        $$
-        \State $t\gets t + 1$
-        \EndWhile
-        \EndFor
-        \EndProcedure
-    \end{algorithmic}
-%  \end{algorithm}
-  Find all of the mistakes in the algorithm. Explain why they are mistakes, and correct them.
+
+ %---------------------------------------------------------------------
+ 
+\begin{question}{10}
+Monte Carlo methods for learning value functions require episodic tasks. Why, specifically? How is it that $n$-step TD methods avoid this limitation and can work with continuing tasks?
+  \begin{minipage}[t][2.5in]{\linewidth}
+    \ifanswers
+    Put answer here
+    \fi
+  \end{minipage}
+
+\end{question}
+
+\begin{question}{20}
+Your Monte-Carlo algorithm generates the following episode using
+policy $\pi$ when interacting with its environment. This is the first
+episode that has been generated.
+\begin{center}
+  \begin{tabular}{|c|c|c|c|}
+    \hline
+    Timestep & Reward & State & Action\\
+    \hline
+    \hline
+0 & & $s_1$ & $a_1$ \\
+    \hline
+1 & 13 & $s_1$ & $a_2$ \\
+    \hline
+2 & 7 & $s_1$ & $a_1$ \\
+    \hline
+3 & 13 & $s_1$ & $a_2$ \\
+    \hline
+4 & 14 & $s_2$ &  \\
+    \hline
+  \end{tabular}
+\end{center}
+Assume the discount factor, $\gamma$, is 1, and $s_2$ is a terminal state.
+\begin{subquestion}
+  What are the estimates of: $q_\pi(s_1, a_1)$ and $q_\pi(s_1, a_2)$ if using first-visit?
+  \begin{minipage}[t][2in]{\linewidth}
+    \ifanswers
+    Put answer here
+    \fi
+  \end{minipage}
+\end{subquestion}
+\begin{subquestion}
+  What are the estimates of: $q_\pi(s_1, a_1)$ and $q_\pi(s_1, a_2)$ if using every-visit?
+  \begin{minipage}[t][2in]{\linewidth}
+    \ifanswers
+    Put answer here
+    \fi
+  \end{minipage}
+\end{subquestion}
+
+\end{question}
+
+%-----------------------------------------------------------------------
+
+\begin{question}{4}
+  True or False?
+  \vspace{\baselineskip}
+  \begin{subquestion}
+\rule{1cm}{0.15mm} Q-learning can learn the optimal Q-function $Q^*$ without ever executing the optimal policy.
+  \end{subquestion}
+  \vspace{\baselineskip}
+  \begin{subquestion}
+\rule{1cm}{0.15mm} If an MDP has a transition model $T$ that assigns non-zero probability for all triples $T (s, a, s')$
+then Q-learning will fail.
+\end{subquestion}
+\end{question}
+
+%-----------------------------------------------------------------------
+%-----------------------------------------------------------------------
+
+\begin{question}{16}
+  What is the formal definition of a Partially Observable Markov Decision Process (POMDP), and why is it so much more difficult to find an optimal policy for a POMDP compared to a Completey Obesrvable Markov Decision process?
   \begin{minipage}[t][5in]{\linewidth}
     \ifanswers
     Put answer here
     \fi
   \end{minipage}
-\end{question}
-
- %---------------------------------------------------------------------
- 
-\begin{question}{60}
-  Your friend found a variant of SARSA which is defined through a sequence of policies $\pi_t$ (where $t\ge 1$), and consists of just changing (in the previous algorithm {\bf after corrections}) the way the target is computed. The target becomes
-  $$
-  y_t = r_t + \lambda \sum_a \pi_t(a|s_{t+1})Q(S_{t+1},a),
-  $$
-  where $\pi_t(a|s)$  is the probability that $a$ is selected in state $s$ under policy $\pi_t.$
-
-  \begin{subquestion}
-    What sequence of policies $(\pi_t)$ % _{t\ge 1}$
-    should you choose so that the corresponding variant of SARSA is on-policy?
-    This variant is called Expected SARSA.
-  \begin{minipage}[t][1in]{\linewidth}
-  \end{minipage}
-  \end{subquestion}
-  
-  \begin{subquestion}
-    Consider an off-policy variant of SARSA corresponding to a stationary policy $\pi=\pi_t \forall t.$ Under this algorithm, do the Q values converge? If so, what are the limiting Q values?  Justify your answer.
-  \begin{minipage}[t][1in]{\linewidth}
-  \end{minipage}
-  \end{subquestion}
 
 \end{question}
-
 
 %-----------------------------------------------------------------------
+\begin{question}{50}
+A rat is involved in an experiment. It experiences one episode. At the
+first step it hears a bell. At the second step it sees a light. At the
+third step it both hears a bell and sees a light. It then receives
+some food, worth $+1$ reward, and the episode terminates on the fourth
+step. All other rewards were zero. The experiment is undiscounted.
+  \vspace{\baselineskip}
+\begin{subquestion} (7 pts)
+Represent the rat’s state $s$ by a vector of two binary features, $bell(s) \in \{0, 1\}$ and
+$light(s) \in \{0, 1\}$. Write down the sequence of feature vectors corresponding to this
+episode.
+  \begin{minipage}[t][1.5in]{\linewidth}
+    \ifanswers
+    Put answer here
+    \fi
+  \end{minipage}
+\end{subquestion}
+\begin{subquestion} (7 pts)
+Approximate the state-value function by a linear combination of these
+features with two parameters: $b \cdot bell(s) + l \cdot light(s)$. If
+$b = 2$ and $l = -2$ then write down the sequence of approximate
+values corresponding to this episode.
+  \begin{minipage}[t][1.5in]{\linewidth}
+    \ifanswers
+    Put answer here
+    \fi
+  \end{minipage}
+\end{subquestion}
+\begin{subquestion} (4 pts)
+ Define the $\lambda$-return $v^\lambda_t$.
+  \begin{minipage}[t][1.5in]{\linewidth}
+    \ifanswers
+    Put answer here
+    \fi
+  \end{minipage}
+\end{subquestion}
+\begin{subquestion} (7 pts)
+Write down the sequence of $\lambda$-returns $v^\lambda_t$
+ corresponding to this episode, for $\lambda = 0.5$
+ and $b = 2$, $l = -2$.
+  \begin{minipage}[t][1.5in]{\linewidth}
+    \ifanswers
+    Put answer here
+    \fi
+  \end{minipage}
+\end{subquestion}
+\end{question}
+\begin{continuequestion}
+\begin{subquestion} (7 pts)
+Using the forward-view TD($\lambda$) algorithm and your linear
+function approximator, what are the sequence of updates to weight $b$?
+What is the total update to weight $b$?  Use $\lambda = 0.5$, $\gamma = 1$, $\alpha = 0.5$ and start with $b = 2$, $l = -2$.
+  \begin{minipage}[t][1.5in]{\linewidth}
+    \ifanswers
+    Put answer here
+    \fi
+  \end{minipage}
+\end{subquestion}
+\begin{subquestion} (4 pts)
+Define the TD($\lambda$) accumulating eligibility trace $\mathbf{e_t}$
+when using linear value function approximation.
+  \begin{minipage}[t][1.5in]{\linewidth}
+    \ifanswers
+    Put answer here
+    \fi
+  \end{minipage}
+\end{subquestion}
+\begin{subquestion} (7 pts)
+Write down the sequence of eligibility traces $\mathbf{e_t}$
+corresponding to the bell, using $\lambda = 0.5$ and $\gamma = 1$,
+  \begin{minipage}[t][1.5in]{\linewidth}
+    \ifanswers
+    Put answer here
+    \fi
+  \end{minipage}
+\end{subquestion}
+\begin{subquestion} (7 pts)
+Using the backward-view TD($\lambda$) algorithm and your linear
+function approximator, what are the sequence of updates to weight $b$?
+(Use offline updates, i.e. do not actually change your weights, just
+accumulate your updates). What is the total update to weight $b$? Use
+$\lambda = 0.5$, $\gamma = 1$, $\alpha = 0.5$ and start with $b = 2$,
+$l = -2$.
+  \begin{minipage}[t][1.5in]{\linewidth}
+    \ifanswers
+    Put answer here
+    \fi
+  \end{minipage}
+\end{subquestion}
+\end{continuequestion}
 
 
 %%  \pagebreak[4]

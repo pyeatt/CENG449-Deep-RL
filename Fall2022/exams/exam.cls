@@ -28,6 +28,7 @@
 \newlength{\qwidth}
 \newcounter{qc}
 \newcounter{sqc}[qc]
+\newcounter{ssqc}
 
 %% \newcommand{\question}[2]{\par\noindent\stepcounter{qc}
 %% \arabic{qc}.\hfill
@@ -41,6 +42,15 @@
 \setlength{\qwidth}{\textwidth}
 \addtolength{\qwidth}{-0.4in}
 \begin{minipage}[t]{\qwidth}(#1 pts) }
+{\end{minipage}\nopagebreak\setcounter{ssqc}{\value{sqc}}}
+
+\newenvironment{continuequestion}{\par\noindent%\stepcounter{qc}
+%\vspace{2 \baselineskip}
+%\arabic{qc}.\hfill
+\setcounter{sqc}{\value{ssqc}}
+\setlength{\qwidth}{\textwidth}
+\addtolength{\qwidth}{-0.4in}
+\begin{minipage}[t]{\qwidth}}
 {\end{minipage}\nopagebreak}
 
 \newenvironment{subquestion}{\par\noindent

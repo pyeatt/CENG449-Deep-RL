@@ -1,0 +1,4 @@
+Hello, you can compile my project with: g++ -o PA1 policyItteration.cpp
+The second number of Optimal Deterministic Policies was not found,
+but calculated directly from the problem statement.
+Have a great week!

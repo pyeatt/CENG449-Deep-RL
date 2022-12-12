@@ -1,0 +1,336 @@
+/****************************************************************************
+*   CSC 449 - Programming Assignment 1
+*   Bradley Dahlke
+*   The goal of this programming assignment is to print the policy iteration
+*   of the given gridworld problem and give an optimal policy. Currently,
+*   the code can iterate and evaluate through the policy, but is also
+*   not updating the probabilities of reaching each state when completed.
+*   The code, when ran this way, would encounter an infinite loop, and
+*   upon further inspection when debugging, would not alter the
+*   probabilities.
+*
+*****************************************************************************/
+
+
+#include <stdio.h>
+#include <math.h>
+#include <iostream>
+using namespace std;
+
+//The environment has 16 states, arranged as a 4x4 grid.
+#define NSTATES 16
+
+//There are four actions available in each state
+typedef enum {LEFT, UP, RIGHT, DOWN} ACTION;
+
+#define NACTIONS (DOWN+1-LEFT)
+
+//The state transition probabilities are deterministic.
+float P_sas[16][4][16] =
+ {
+    {
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},     //Starting in state 0, taking action LEFT
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},     //Starting in state 0, taking action UP
+	{0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},     //Starting in state 0, taking action RIGHT
+	{0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0}       //Starting in state 0, taking action DOWN
+    },     
+
+    {
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},     //Starting in state 1, taking action LEFT
+	{0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},     //Starting in state 1, taking action UP
+	{0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0},     //Starting in state 1, taking action RIGHT
+	{0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},      //Starting in state 1, taking action DOWN
+    },
+
+    {
+	{0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},     //Starting in state 2, taking action LEFT
+	{0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0},     //Starting in state 2, taking action UP
+	{0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0},     //Starting in state 2, taking action RIGHT
+	{0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0}      //Starting in state 2, taking action DOWN
+    },
+
+    {
+	{0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0},     //Starting in state 3, taking action LEFT
+	{0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0},     //Starting in state 3, taking action UP
+	{0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0},     //Starting in state 3, taking action RIGHT
+	{0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0}      //Starting in state 3, taking action DOWN
+    },
+
+    {
+	{0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0},     //Starting in state 4, taking action LEFT
+	{1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},     //Starting in state 4, taking action UP
+	{0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},     //Starting in state 4, taking action RIGHT
+	{0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0}      //Starting in state 4, taking action DOWN
+    },
+
+    {
+	{0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0},     //Starting in state 5, taking action LEFT
+	{0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0},     //Starting in state 5, taking action UP
+	{0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0},     //Starting in state 5, taking action RIGHT
+	{0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0},      //Starting in state 5, taking action DOWN
+    },
+
+    {
+	{0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},     //Starting in state 6, taking action LEFT
+	{0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0},     //Starting in state 6, taking action UP
+	{0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0},     //Starting in state 6, taking action RIGHT
+	{0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0},      //Starting in state 6, taking action DOWN
+    },
+    
+    {
+	{0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},     //Starting in state 7, taking action LEFT
+	{0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0},     //Starting in state 7, taking action UP
+	{0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0},     //Starting in state 7, taking action RIGHT
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0},      //Starting in state 7, taking action DOWN
+    },  
+
+    {
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},     //Starting in state 8, taking action LEFT
+	{0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0},     //Starting in state 8, taking action UP
+	{0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0},     //Starting in state 8, taking action RIGHT
+	{0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0},      //Starting in state 8, taking action DOWN
+    },
+
+    {
+	{0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0},     //Starting in state 9, taking action LEFT
+	{0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0},     //Starting in state 9, taking action UP
+	{0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0},     //Starting in state 9, taking action RIGHT
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0},      //Starting in state 9, taking action DOWN
+    },
+    
+    {
+	{0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0},     //Starting in state 10, taking action LEFT
+	{0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0},     //Starting in state 10, taking action UP
+	{0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0},     //Starting in state 10, taking action RIGHT
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0},      //Starting in state 10, taking action DOWN
+    },
+    
+    {
+	{0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0},     //Starting in state 11, taking action LEFT
+	{0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0},     //Starting in state 11, taking action UP
+	{0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0},     //Starting in state 11, taking action RIGHT
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},      //Starting in state 11, taking action DOWN
+    },
+
+    {
+	{0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0},     //Starting in state 12, taking action LEFT
+	{0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0},     //Starting in state 12, taking action UP
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0},     //Starting in state 12, taking action RIGHT
+	{0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0},      //Starting in state 12, taking action DOWN
+    },
+
+    {
+	{0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0},     //Starting in state 13, taking action LEFT
+	{0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0},     //Starting in state 13, taking action UP
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0},     //Starting in state 13, taking action RIGHT
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0},      //Starting in state 13, taking action DOWN
+    },
+
+    {
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0},     //Starting in state 14, taking action LEFT
+	{0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0},     //Starting in state 14, taking action UP
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},     //Starting in state 14, taking action RIGHT
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0},      //Starting in state 14, taking action DOWN
+    },
+
+    {
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0},     //Starting in state 15, taking action LEFT
+	{0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0},     //Starting in state 15, taking action UP
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},     //Starting in state 15, taking action RIGHT
+	{0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1},      //Starting in state 15, taking action DOWN
+    },
+
+
+
+};
+
+float p_sas(int s, int a)
+{
+    //Returns S Prime
+    int co = 0;
+    while (P_sas[s][a][co] != 1)
+    {
+        co++;
+    }
+	return co;
+}
+
+//reward function
+float r(int s, ACTION a)
+{
+    if(s == 8 && a == LEFT)
+    {
+        return -2;
+    }
+    else if(s == 15 && a == DOWN)
+    {
+        return 0;
+    }
+    else if(s == 15 && a == RIGHT)
+    {
+        return 0;
+    }
+	return -1;
+}
+
+
+//The policy is a probability distribution over actions for each state. Initialize it to a random policy
+float policy[4][16] = 
+{
+	{1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS},
+	{1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS},
+	{1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS},
+	{1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS,1.0/NACTIONS}
+};
+
+
+float inner_bellman(float v[], int s)
+{
+int i = 1;
+float temp = 0;
+int sprime = p_sas(s, ACTION(0));
+float max = r(s, ACTION(0)) + 0.95 * v[sprime];
+for (i = 1; i < NACTIONS; i++)
+{
+    sprime = p_sas(s, ACTION(i));
+    temp = r(s, ACTION(i)) + 0.95 * v[sprime];
+
+    if (temp > max)
+        max = temp;
+}
+return max;
+}
+
+
+//Evaluate the policy (1-step). If the values have converged, return 1, else 0.
+int evaluate_policy(float policy[4][16], float state_values[16], float delta)
+{
+
+	int i,j;
+	int converged = 1;
+	float new_values[16];
+	//apply the Bellman equation to each state
+	for(i=0;i<NSTATES;i++)
+	{
+		//for each state multiply the value of a state action pair by the probability of choosing that action in the //given state under the given policy.
+		new_values[i] = 0;
+		for(j=0;j<NACTIONS;j++)
+			new_values[i] += policy[j][i] * inner_bellman(state_values, i);
+			//check for convergence
+			if(fabs(new_values[i] - state_values[i]) > delta)
+				converged = 0;
+	}
+	//copy new values into the statevalues array
+	for(i=0;i<NSTATES;i++)
+		state_values[i] = new_values[i];
+	return converged;
+}
+
+int improve_policy(float policy[4][16], float state_values[16])
+{
+
+	float new_policy[4][16] = {{0}};
+	int i, j, k, action, count;
+	int changed = 0;
+	float max;
+	//The val of taking action j in state I is the sum over each possible resulting state times the probability of going to //that state.
+	for(i=0;i<NSTATES;i++)
+		for(j=0;j<NACTIONS;j++)
+			for(k=0;k<NSTATES;k++)
+                
+				new_policy[j][i] += state_values[k] * p_sas(i, j);
+		
+	for(i=0;i < NSTATES; i++)
+		action = 0;
+		for(j=1;j<NACTIONS;j++)
+        {
+			if(new_policy[j][i] > new_policy[action][i])
+				action = j;
+        }
+
+        //Deterministic
+		for(j=0;j<NACTIONS;j++)
+			if(j==action)
+				new_policy[i][j] = 1.0;
+			else
+				new_policy[i][j] = 0.0;
+			
+		/*
+	
+		max = new_policy[i][action];
+		count = 0;
+		for(j=0;j<NACTIONS;j++)
+        {
+            new_policy;
+        }
+        */
+        if (new_policy == policy)
+        {
+            return 0;
+        }
+        policy = new_policy;
+        
+        return 1;
+}
+
+void print_policy(float policy[4][16])
+{
+    cout << "Policy: " << endl;
+    ACTION act;
+    int i = 0;
+    for(i = 0; i < NSTATES; i++)
+    {
+        cout << "State 1: L - " << policy[LEFT][i] << ", U - " << policy[UP][i] << ", R - " << policy[RIGHT][i] << ", D - " << policy[DOWN][i] << endl;
+    }
+}
+
+void print_values(float state_values[16])
+{
+    cout << "State Values:" << endl;
+    int i = 0;
+    for(i = 0; i < NSTATES; i++)
+    {
+        cout << "State " << i << ": " << state_values[i] << endl;
+    }
+}
+
+
+
+
+int main()
+{
+
+	int i, policy_changed, converged;
+	float state_values[16];
+	
+	print_policy(policy);
+	
+	//Repeat our eval/improvement until the policy is optimal
+	
+
+
+		for(i=0; i<NSTATES;i++)
+		{
+		
+			state_values[i] = 0.0;
+			
+		}
+		
+		//Evaluate the current policy, returning all of the state values. Repeat until the values converge.
+		do
+		{
+
+			print_values(state_values);
+			converged = evaluate_policy(policy, state_values, 0.001);
+		}
+		while (! converged);
+		
+		//improve the policy by creating a new greedy policy based on the state values.
+		
+		policy_changed = improve_policy(policy, state_values);
+		print_policy(policy);
+	
+	
+	return 0;
+	
+}

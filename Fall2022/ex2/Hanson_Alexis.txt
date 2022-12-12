@@ -1,0 +1,10 @@
+1: the learning rate for a state appears to be reduced the more times a state is visited, which seems like an extremely unusual choice, but I am unsure if it is a flaw
+
+	A: y_t should equal r_t + \lambda Q(S_t+1,a_t+1), the max Q_a is only a feature of Q-learning, and it omitted the discount factor
+	B: Q function update should be Q(s_t,a_t) = Q(s_t,a_t) + alpha_n(s_t,a_t)(y_t-Q(s_t,a_t)), each step should update the Q for that step's state-action pair, not the next, and the sign on the adjustment was wrong, which would result in anti-learning
+	C: if s and a are stored as explicit vectors and indexed by t, it should be listed, otherwise it should end with s_t = s_t+1, a_t = a_t+1
+
+2:
+	a: \pi_t(a_t+1|s_t+1) should equal 1, while all other actions have zero probability
+		as a side note, I believe the "this is called expected SARSA" is unclear, as according to the book, this value update is called expected SARSA regardless of policy, while the phrasing implies that only an on policy version of it would be
+	b: not necessarily, it is possible for \pi to be a policy which will never end the episode (e.x. a policy of "always go up" in a gridworld), and thus some Q values could diverge to negative infinity given a negative reward per step and infinite steps

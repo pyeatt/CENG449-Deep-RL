@@ -1,0 +1,12 @@
+
+double* get_features(double x, double xdot, int order)
+{
+  double *features = malloc((order+1)*(order+1)*sizeof(double));
+
+  if(features==NULL)
+    scream_and_die();
+
+  
+
+  return features;
+}
